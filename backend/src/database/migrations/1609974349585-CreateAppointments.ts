@@ -1,7 +1,6 @@
 import {MigrationInterface, QueryRunner, Table} from "typeorm";
 
 export default class CreateAppointments1609974349585 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
       await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
 
@@ -19,14 +18,22 @@ export default class CreateAppointments1609974349585 implements MigrationInterfa
             {
               name: 'provider',
               type: 'varchar',
-              isNullable: false,
             },
             {
               name: 'date',
               type: 'timestamp with time zone',
-              isNullable: false,
-            }
-          ]
+            },
+            {
+              name: 'created_at',
+              type: 'timestamp',
+              default: 'now()',
+            },
+            {
+              name: 'updated_at',
+              type: 'timestamp',
+              default: 'now()',
+            },
+          ],
         })
       );
     }
@@ -34,5 +41,4 @@ export default class CreateAppointments1609974349585 implements MigrationInterfa
     public async down(queryRunner: QueryRunner): Promise<void> {
       await queryRunner.dropTable('appointments');
     }
-
 }
