@@ -1,15 +1,18 @@
-import { request, response, Router } from 'express';
+import { Router } from 'express';
 import { getCustomRepository } from 'typeorm';
-;import { startOfHour, parseISO } from 'date-fns';
+;import { parseISO } from 'date-fns';
 
 import AppointmentsRepository from '../repositories/AppointmentsRepository';
 import CreateAppointmentService from '../services/CreateAppointmentService';
-import Appointment from '../models/Appointment';
+
+import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 
 const appointmentsRouter = Router();
 
 // SoC: Separation of Concerns (Separação de preocupações).
 // DTO - Data Transfer Object
+
+appointmentsRouter.use(ensureAuthenticated);
 
 appointmentsRouter.get('/', async (request, response) => {
   const appointmentsRepository = getCustomRepository(AppointmentsRepository);
@@ -19,19 +22,15 @@ appointmentsRouter.get('/', async (request, response) => {
 });
 
 appointmentsRouter.post('/', async (request, response) => {
-  try {
-    const { provider_id, date } = request.body;
+  const { provider_id, date } = request.body;
 
-    const parsedDate = parseISO(date);
+  const parsedDate = parseISO(date);
 
-    const createAppointment =  new CreateAppointmentService();
+  const createAppointment =  new CreateAppointmentService();
 
-    const appointment = await createAppointment.execute({ date: parsedDate, provider_id })
+  const appointment = await createAppointment.execute({ date: parsedDate, provider_id })
 
-    return response.json(appointment);
-  } catch (err) {
-    return response.status(400).json({ error: err.message });
-  }
+  return response.json(appointment);
 });
 
 export default appointmentsRouter;
