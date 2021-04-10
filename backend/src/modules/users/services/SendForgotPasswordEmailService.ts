@@ -3,9 +3,7 @@ import { injectable, inject } from 'tsyringe';
 import AppError from '@shared/errors/AppError';
 import IUsersRepository from '../repositories/IUsersRepository';
 import IMailProvider from '@shared/container/providers/MailProvider/models/IMailProvider';
-import IUsersTokensRepository from '../repositories/IUsersTokensRepository';
-
-import User from '../infra/typeorm/entities/User';
+import IUserTokensRepository from '../repositories/IUserTokensRepository';
 
 interface IRequest {
   email: string;
@@ -13,7 +11,7 @@ interface IRequest {
 
 @injectable()
 class SendForgotPasswordEmailService {
-  constructor(
+  constructor( 
     @inject('UsersRepository')
     private usersRepository: IUsersRepository,
 
@@ -21,7 +19,7 @@ class SendForgotPasswordEmailService {
     private mailProvider: IMailProvider,
 
     @inject('UserTokensRepository')
-    private userTokensRepository: IUsersTokensRepository,
+    private userTokensRepository: IUserTokensRepository,
   ) {}
 
   public async execute({ email }: IRequest): Promise<void> {
@@ -31,9 +29,22 @@ class SendForgotPasswordEmailService {
       throw new AppError('O e-mail não existe.');
     }
 
-    await this.userTokensRepository.generate(user.id);
+    const { token } = await this.userTokensRepository.generate(user.id);
 
-    this.mailProvider.sendMail(email, 'Pedido de recuperação recebido')
+    await this.mailProvider.sendMail({
+      to: {
+        name: user.name,
+        email: user.email,
+      },
+      subject: '[IuBarber] Recuperação de senha',
+      templateData: {
+        template: 'Olá, {{name}}: {{token}}',
+        variables: {
+          name: user.name,
+          token,
+        }
+      }
+    });
   }
 }
 
