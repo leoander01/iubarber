@@ -3,7 +3,7 @@ import {MigrationInterface, QueryRunner, Table} from 'typeorm';
 export default class CreateUserTokens1600735848711 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(new Table({
-      name: 'users_tokens',
+      name: 'user_tokens',
       columns: [
           {
               name: 'id',
@@ -17,7 +17,7 @@ export default class CreateUserTokens1600735848711 implements MigrationInterface
               type: 'uuid',
               generationStrategy: 'uuid',
               default: 'uuid_generate_v4()',
-          },
+          },  
           {
               name: 'user_id',
               type: 'uuid',
