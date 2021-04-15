@@ -32,5 +32,4 @@ export default class AlterProviderFieldToProviderId1610147630151 implements Migr
         type: 'varchar'
       }));
     }
-
 }
