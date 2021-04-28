@@ -14,8 +14,8 @@ export default {
 
   defaults: {
     from: {
-      email: 'leo@teste.com.br',
-      name: 'Leo do IuBarber'
+      email: 'equipe@auricode.com.br',
+      name: 'Equipe IuBarber'
     }
   }
 } as IMailConfig;
