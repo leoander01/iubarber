@@ -1,7 +1,6 @@
 import fs from 'fs'; 
 import path from 'path'; 
 import uploadConfig from '@config/upload';
-import { diskStorage } from 'multer';
 
 import IStorageProvider from "../models/IStorageProvider";
 

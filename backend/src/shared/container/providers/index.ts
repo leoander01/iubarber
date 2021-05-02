@@ -6,7 +6,7 @@ import DiskStorageProvider from "./StorageProvider/implementations/DiskStoragePr
 import IMailTemplateProvider from "./MailTemplateProvider/models/IMailTemplateProvider";
 import HandlebarsMailTemplateProvider from "./MailTemplateProvider/implementations/HandlebarsMailTemplateProvider";
 
-import './IStorageProvider';
+import './StorageProvider';
 import './MailTemplateProvider';
 import './MailProvider';
 
