@@ -3,9 +3,10 @@ import { injectable, inject } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 
+import ICacheProvider from '@shared/container/providers/CacheProvider/models/ICacheProvider';
+import INotificationsRepository from '@modules/notifications/repositories/INotificationsRepository';
 import Appointment from '../infra/typeorm/entities/Appointment';
 import IAppointmentsRepository from '../repositories/IAppointmentsRepository';
-import INotificationsRepository from '@modules/notifications/repositories/INotificationsRepository';
 
 interface IRequest {
   provider_id: string;
@@ -21,9 +22,12 @@ class CreateAppointmentService {
 
     @inject('NotificationsRepository')
     private notificationsRepository: INotificationsRepository,
+
+    @inject('CacheProvider')
+    private cacheProvider: ICacheProvider,
   ) {}
 
-  public async execute({ date, user_id, provider_id }: IRequest): Promise<Appointment> {
+  public async execute({ provider_id, user_id, date }: IRequest): Promise<Appointment> {
     const appointmentDate = startOfHour(date);
 
     if (isBefore(appointmentDate, Date.now())) {
@@ -38,7 +42,7 @@ class CreateAppointmentService {
       throw new AppError('Você pode criar um apontamento entre 8h e 17h.')
     }
 
-    const findAppointmentsInSameDate = await this.appointmentsRepository.findByDate(appointmentDate);
+    const findAppointmentsInSameDate = await this.appointmentsRepository.findByDate(appointmentDate, provider_id);
 
     if (findAppointmentsInSameDate) {
       throw new AppError('Este compromisso já está agendado.');
@@ -57,6 +61,10 @@ class CreateAppointmentService {
       recipient_id: provider_id,
       content: `Novo agendamento para o dia ${dateFormatted}`
     });
+
+    await this.cacheProvider.invalidate(
+      `provider-appointments:${provider_id}:${format(appointmentDate, 'yyyy-M-d')}`  
+    );
 
     return appointment;
   }
