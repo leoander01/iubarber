@@ -42,7 +42,10 @@ class CreateAppointmentService {
       throw new AppError('Você pode criar um apontamento entre 8h e 17h.')
     }
 
-    const findAppointmentsInSameDate = await this.appointmentsRepository.findByDate(appointmentDate, provider_id);
+    const findAppointmentsInSameDate = await this.appointmentsRepository.findByDate(
+      appointmentDate, 
+      provider_id
+    );
 
     if (findAppointmentsInSameDate) {
       throw new AppError('Este compromisso já está agendado.');
