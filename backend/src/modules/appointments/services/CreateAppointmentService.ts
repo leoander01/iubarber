@@ -38,7 +38,7 @@ class CreateAppointmentService {
       throw new AppError('Você não pode criar um apontamento consigo mesmo.')
     }
 
-    if (getHours(appointmentDate) < 8 || getHours(appointmentDate) > 17) {
+    if (getHours(appointmentDate) < 8 || getHours(appointmentDate) > 23) {
       throw new AppError('Você pode criar um apontamento entre 8h e 17h.')
     }
 
