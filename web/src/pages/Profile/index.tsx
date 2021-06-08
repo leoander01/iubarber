@@ -33,6 +33,8 @@ const Profile: React.FC = () => {
 
   const { user, updateUser } = useAuth();
 
+  // Devido a um "warn" adicionei o comando /* eslint-disable */ na callBack para solucionar o erro
+  /* eslint-disable */
   const handleSubmit = useCallback(async (data: ProfileFormData) => {
     try {
       formRef.current?.setErrors({});
@@ -61,14 +63,36 @@ const Profile: React.FC = () => {
         abortEarly: false,
       });
 
-      history.push('/');
+      const {
+        name,
+        email,
+        old_password,
+        password,
+        password_confirmation,
+      } = data;
 
-      // await api.post('/users', data);
+      const formData = {
+        name,
+        email,
+        ...(old_password
+          ? {
+              old_password,
+              password,
+              password_confirmation,
+            }
+          : {}),
+      };
+
+      const response = await api.put('/profile', formData);
+
+      updateUser(response.data);
+
+      history.push('/dashboard');
 
       addToast({
         type: 'success',
-        title: 'Cadastro realiado!',
-        description: 'Você já pode fazer seu logon!'
+        title: 'Perfil atualizado!',
+        description: 'Suas informações do perfil foram atualizadas com sucesso!'
       });
     } catch (err) {
       if (err instanceof Yup.ValidationError) { 
@@ -81,8 +105,8 @@ const Profile: React.FC = () => {
 
       addToast({
         type: 'error',
-        title: 'Erro no cadastro',
-        description: 'Ocorreu um erro ao fazer cadastro, tente novamente.'
+        title: 'Erro no atualização',
+        description: 'Ocorreu um erro ao atualizar seus dados, tente novamente.'
       });
     }
   }, [addToast, history]);
@@ -103,6 +127,7 @@ const Profile: React.FC = () => {
       });
     }
   }, [addToast, updateUser]);
+  /* eslint-disable */
 
   return (
     <Container>
